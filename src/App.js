@@ -110,7 +110,7 @@ function App() {
     }
   };
 
-  const isMerchant = defaultAccount === merchantAddress;
+  const isMerchant = defaultAccount.toLowerCase() === merchantAddress;
   return (
     <>
       <nav>
