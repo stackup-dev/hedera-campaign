@@ -1,6 +1,13 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import { AccountId, PrivateKey, Client, TopicMessageSubmitTransaction } from "@hashgraph/sdk";
+import {
+  AccountId,
+  PrivateKey,
+  Client,
+  TopicMessageSubmitTransaction,
+  AccountAllowanceApproveTransaction,
+  TokenAssociateTransaction,
+} from "@hashgraph/sdk";
 import { Buffer } from "buffer";
 import { Routes, Route, NavLink } from "react-router-dom";
 import CreateCar from "./pages/CreateCar";
@@ -8,6 +15,7 @@ import GiveScore from "./pages/GiveScore";
 import Borrow from "./pages/BorrowCar";
 import Return from "./pages/ReturnCar";
 import { ethers } from "ethers";
+import { MirrorNodeClient } from "../src/mirrorNodeClient";
 
 // Part 1 - import ABI
 
@@ -68,7 +76,58 @@ function App() {
     }
   };
 
+  const associateNFTToken = async (id) => {
+    try {
+      client.setOperator(customerAccount, customerKey);
+      const associateTransaction = new TokenAssociateTransaction().setAccountId(customerAccount).setTokenIds([id]).freezeWith(client);
+      const signedAssociateTransaction = await associateTransaction.sign(merchantKey);
+      const transactionResponse = await signedAssociateTransaction.execute(client);
+      const associateRx = await transactionResponse.getReceipt(client);
+      console.log(`associated with NFT status: ${associateRx.status}`);
+      // set the client as the merchant again
+      client.setOperator(customerAccount, customerKey);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const associateFTToken = async () => {
+    try {
+      client.setOperator(customerAccount, customerKey);
+      const associateTransaction = new TokenAssociateTransaction().setAccountId(customerAccount).setTokenIds([ftId]).freezeWith(client);
+      const signedAssociateTransaction = await associateTransaction.sign(merchantKey);
+      const transactionResponse = await signedAssociateTransaction.execute(client);
+      const associateRx = await transactionResponse.getReceipt(client);
+      console.log(`associated with Fungible Token status: ${associateRx.status}`);
+      // set the client as the merchant again
+      client.setOperator(merchantId, merchantKey);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const isAssociated = async (id) => {
+    // 1. create an instance of the mirror node client
+    const mirrorNodeClient = new MirrorNodeClient("testnet");
+    // 2. get account info
+    return await mirrorNodeClient
+      .getAccountInfo(customerAccount)
+      .then((acc) => {
+        const associatedTokensList = acc.balance.tokens;
+        // 3. check if the token is associated
+        return associatedTokensList.some((token) => token.token_id === id);
+      })
+      .catch((rejectErr) => {
+        console.log("could not get token balance", rejectErr);
+      });
+  };
+
   const borrowCar = async (id, serial) => {
+    if (!(await isAssociated(id))) {
+      await associateNFTToken(id);
+      await associateFTToken();
+    }
+
     try {
       if (!contract) getContract();
       // Part 8 - borrow new car
