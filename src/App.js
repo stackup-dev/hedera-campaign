@@ -50,7 +50,7 @@ function App() {
   const getScore = async () => {
     try {
       if (defaultAccount) {
-        // Part 12 - get reputation token score
+        // Part 17 - get reputation token score
       }
     } catch (e) {
       console.log(e);
@@ -77,62 +77,25 @@ function App() {
   };
 
   const associateNFTToken = async (id) => {
-    try {
-      client.setOperator(customerAccount, customerKey);
-      const associateTransaction = new TokenAssociateTransaction().setAccountId(customerAccount).setTokenIds([id]).freezeWith(client);
-      const signedAssociateTransaction = await associateTransaction.sign(merchantKey);
-      const transactionResponse = await signedAssociateTransaction.execute(client);
-      const associateRx = await transactionResponse.getReceipt(client);
-      console.log(`associated with NFT status: ${associateRx.status}`);
-      // set the client as the merchant again
-      client.setOperator(customerAccount, customerKey);
-    } catch (err) {
-      console.error(err);
-    }
+    // Part 8 - associate NFT
   };
 
   const associateFTToken = async () => {
-    try {
-      client.setOperator(customerAccount, customerKey);
-      const associateTransaction = new TokenAssociateTransaction().setAccountId(customerAccount).setTokenIds([ftId]).freezeWith(client);
-      const signedAssociateTransaction = await associateTransaction.sign(merchantKey);
-      const transactionResponse = await signedAssociateTransaction.execute(client);
-      const associateRx = await transactionResponse.getReceipt(client);
-      console.log(`associated with Fungible Token status: ${associateRx.status}`);
-      // set the client as the merchant again
-      client.setOperator(merchantId, merchantKey);
-    } catch (err) {
-      console.error(err);
-    }
+    // Part 9 - associate fungible token
   };
 
   const isAssociated = async (id) => {
-    // 1. create an instance of the mirror node client
-    const mirrorNodeClient = new MirrorNodeClient("testnet");
-    // 2. get account info
-    return await mirrorNodeClient
-      .getAccountInfo(customerAccount)
-      .then((acc) => {
-        const associatedTokensList = acc.balance.tokens;
-        // 3. check if the token is associated
-        return associatedTokensList.some((token) => token.token_id === id);
-      })
-      .catch((rejectErr) => {
-        console.log("could not get token balance", rejectErr);
-      });
+    // Part 10 - check token association
   };
 
   const borrowCar = async (id, serial) => {
-    if (!(await isAssociated(id))) {
-      await associateNFTToken(id);
-      await associateFTToken();
-    }
+    // Part 11 - check if tokens are associated, associate them if not
 
     try {
       if (!contract) getContract();
-      // Part 8 - borrow new car
+      // Part 12 - borrow new car
 
-      // Part 9 - submit borrow car logs to topic
+      // Part 13 - submit borrow car logs to topic
 
       alert("Successfully borrowed car!");
     } catch (e) {
@@ -141,12 +104,28 @@ function App() {
     }
   };
 
+  const getContractId = async () => {
+    const mirrorNodeClient = new MirrorNodeClient("testnet");
+    return await mirrorNodeClient
+      .getContractInfo(scAddress)
+      .then((acc) => {
+        const contractId = acc.contract_id;
+        return contractId;
+      })
+      .catch((rejectErr) => {
+        console.log("Could not get token balance", rejectErr);
+      });
+  };
+
   const returnCar = async (id, serial) => {
     try {
       if (!contract) getContract();
-      // Part 10 - return car
 
-      // Part 11 - submit return car logs to topic
+      // Part 14 - give SC allowance
+
+      // Part 15 - return car
+
+      // Part 16 - submit return car logs to topic
 
       alert("Successfully returned car!");
     } catch (e) {
@@ -158,9 +137,9 @@ function App() {
   const giveScore = async (customer, score) => {
     try {
       if (!contract) getContract();
-      // Part 13 - give reputation tokens
+      // Part 18 - give reputation tokens
 
-      // Part 14 - submit give reputation tokens logs to topic
+      // Part 19 - submit give REP tokens logs to topic
 
       alert("Successfully gave REP tokens!");
     } catch (e) {

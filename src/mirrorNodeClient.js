@@ -13,4 +13,10 @@ export class MirrorNodeClient {
     const accountInfoJson = await accountInfo.json();
     return accountInfoJson;
   }
+
+  async getContractInfo(scAddress) {
+    const scInfo = await fetch(`${this.url}api/v1/contracts/` + scAddress, { method: "GET" });
+    const scInfoJson = await scInfo.json();
+    return scInfoJson;
+  }
 }
