@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { TokenId } from "@hashgraph/sdk";
 import moment from "moment";
 
 function BorrowButton({ nft, borrowCar, flag, setFlag }) {
@@ -8,7 +9,9 @@ function BorrowButton({ nft, borrowCar, flag, setFlag }) {
       className="primary-btn"
       onClick={async () => {
         setIsLoading(true);
-        await borrowCar(nft.token_id, nft.serial_number);
+        // Added conversion of tokenId to solidity address
+        const tokenSolidityAddress = "0x" + TokenId.fromString(nft.token_id).toSolidityAddress();
+        await borrowCar(tokenSolidityAddress, nft.serial_number);
         setIsLoading(false);
         setFlag(!flag);
       }}

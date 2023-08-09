@@ -50,7 +50,7 @@ function App() {
   const getScore = async () => {
     try {
       if (defaultAccount) {
-        // Part 17 - get reputation token score
+        // Part 16 - get reputation token score
       }
     } catch (e) {
       console.log(e);
@@ -76,26 +76,22 @@ function App() {
     }
   };
 
-  const associateNFTToken = async (id) => {
-    // Part 8 - associate NFT
-  };
-
-  const associateFTToken = async () => {
-    // Part 9 - associate fungible token
+  const associateToken = async (id) => {
+    // Part 8 - associate token
   };
 
   const isAssociated = async (id) => {
-    // Part 10 - check token association
+    // Part 9 - check token association
   };
 
-  const borrowCar = async (id, serial) => {
-    // Part 11 - check if tokens are associated, associate them if not
+  const borrowCar = async (tokenSolidityAddress, serial) => {
+    // Part 10 - check if tokens are associated, associate them if not
 
     try {
       if (!contract) getContract();
-      // Part 12 - borrow new car
+      // Part 11 - borrow new car
 
-      // Part 13 - submit borrow car logs to topic
+      // Part 12 - submit borrow car logs to topic
 
       alert("Successfully borrowed car!");
     } catch (e) {
@@ -117,15 +113,15 @@ function App() {
       });
   };
 
-  const returnCar = async (id, serial) => {
+  const returnCar = async (tokenSolidityAddress, serial) => {
     try {
       if (!contract) getContract();
 
-      // Part 14 - give SC allowance
+      // Part 13 - give SC allowance
 
-      // Part 15 - return car
+      // Part 14 - return car
 
-      // Part 16 - submit return car logs to topic
+      // Part 15 - submit return car logs to topic
 
       alert("Successfully returned car!");
     } catch (e) {
@@ -137,9 +133,9 @@ function App() {
   const giveScore = async (customer, score) => {
     try {
       if (!contract) getContract();
-      // Part 18 - give reputation tokens
+      // Part 17 - give reputation tokens
 
-      // Part 19 - submit give REP tokens logs to topic
+      // Part 18 - submit give REP tokens logs to topic
 
       alert("Successfully gave REP tokens!");
     } catch (e) {
